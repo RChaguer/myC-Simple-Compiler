@@ -70,7 +70,7 @@ void write_aff(attribute r, attribute s)
 
 void write_aff_app(attribute r)
 {
-  printf("*(fp + %d) = *(sp + 1);\n",r->reg_number);
+  printf("*sp = *(sp + 1);\n");
 }
 
 void write_aff_p(attribute r, attribute s, int reg_num)
@@ -88,7 +88,6 @@ attribute plus_attribute(attribute x, attribute y) {
   /* unconditionally adding integer values */
   printf("*sp = *(fp + %d) + *(fp + %d);\n", x->reg_number, y->reg_number);
   stack__push();
-  r -> int_val = x -> int_val + y -> int_val;
   return r;
 };
 

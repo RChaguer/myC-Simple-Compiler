@@ -50,7 +50,10 @@ void yyerror (char* s) {
 
 %%
 
-prog : func_list               {}
+prog : head func_list               {}
+;
+
+head : %empty                 {stack__init();}
 ;
 
 func_list : func_list fun      {}

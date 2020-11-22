@@ -5,7 +5,7 @@
 
 void stack__init(){
     printf("#define SIZE 100 \n");
-    printf( "int * stack[SIZE];\n"); 
+    printf( "int stack[SIZE];\n"); 
     printf( "int * sp = stack;\n");
     printf( "int * fp = stack;\n");
 }
