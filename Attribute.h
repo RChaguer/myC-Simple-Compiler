@@ -11,7 +11,6 @@
 #ifndef ATTRIBUTE_H
 #define ATTRIBUTE_H
 
-#define CAPACITY 10
 
 typedef enum {INT, FLOAT, TVOID} type;
 
@@ -31,16 +30,15 @@ typedef struct ATTRIBUTE * attribute;
 
 
 
-attribute new_attribute ();
-/* returns the pointeur to a newly allocated (but uninitialized) attribute value structure */
-int new_reg_num();
-int new_label();
-void write_type(attribute r);
-//void write_stars(attribute r);
-void write_func( attribute r);
-void write_aff(attribute r, attribute s);
-void write_aff_app();
-void write_aff_p(attribute r, attribute s, int reg_num);
+attribute new_attribute ();// returns the pointeur to a newly allocated (but uninitialized) attribute value structure */
+int new_reg_num();// return the number of an unused register
+int new_label();// return the value of an unused label (for loops and conditionals)
+
+void print_func( attribute r); // print the function related the given attribute
+void print_affect(attribute r, attribute s); // print the assignements
+void print_affect_app(); // print the assignement of a function call to a variable
+void print_affect_p(attribute r, attribute s, int reg_num); // print the pointer assignements
+
 
 
 attribute plus_attribute(attribute x, attribute y);

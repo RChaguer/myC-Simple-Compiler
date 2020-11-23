@@ -31,16 +31,8 @@ int new_label()
 //PRINTER
 
 
-void write_type(attribute r)
-{
-  if (r->type_val == INT)
-    printf("int ");
-  else if (r->type_val == FLOAT)
-    printf("float ");
-}
 
-
-void write_func(attribute r)
+void print_func(attribute r)
 {
   if(strcmp(r->name,"main"))
     printf("void call_%s(){\n", r->name);
@@ -48,17 +40,17 @@ void write_func(attribute r)
     printf("int main(){\n");
 }
 
-void write_aff(attribute r, attribute s)
+void print_affect(attribute r, attribute s)
 {
   printf("*(fp + %d) = *(fp + %d);\n",r->reg_number, s->reg_number);
 }
 
-void write_aff_app()
+void print_affect_app()
 {
   printf("*sp = *(sp + 1);\n");
 }
 
-void write_aff_p(attribute r, attribute s, int reg_num)
+void print_affect_p(attribute r, attribute s, int reg_num)
 {
   printf("ri%d = *ri%d;\n", reg_num, s->reg_number);
   printf("%s = *ri%d;\n", r->name, s->reg_number);

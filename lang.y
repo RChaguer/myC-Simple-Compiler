@@ -67,12 +67,12 @@ fun : type fun_head fun_body        {finish_func();}
 ;
 
 fun_head : ID PO PF            { set_symbol_value($<val>1->name, $1, IS_FUNC);
-                                 write_func($1);
+                                 print_func($1);
                                 }
 | ID PO params PF              { 
                                 $1->type_val = $<val>0->type_val;
                                 set_symbol_value($1->name, $1,IS_FUNC);
-                                write_func($1);
+                                print_func($1);
                                 }
 ;
 
@@ -166,7 +166,7 @@ exp                           {}
 // II.1 Affectations
 
 aff : ID EQ exp               { $1 = get_symbol_value($1->name);
-                                write_aff($1, $3);}
+                                print_affect($1, $3);}
 | STAR exp  EQ exp            {}
 ;
 
@@ -232,7 +232,7 @@ exp
 | ID                          {$$ = get_symbol_value($1->name);}
 | app                         { 
                                 $$->reg_number = get_next_register();
-                                write_aff_app($$);
+                                print_affect_app($$);
                                 stack__push();
                                 }
 | NUMI                        {

@@ -80,18 +80,6 @@ attribute set_symbol_value(sid symb_id,attribute value,boolean b) {
 
 
 
-/*void declar_params(int nb_params){
-	elem *tracker;
-	tracker = storage;
-	while (nb_params--)
-	{
-		write_type(tracker->symbol_value);
-		printf(" ri%d = %s;\n", tracker->symbol_value->reg_number, tracker->symbol_name);
-		tracker = tracker->next;
-	}
-}
-*/
-
 void finish_func()
 {
 	elem *tracker;
