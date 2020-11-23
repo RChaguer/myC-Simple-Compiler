@@ -5,14 +5,14 @@
 
 void stack__init(){
     printf("#define SIZE 100 \n");
-    printf( "int stack[SIZE];\n"); 
-    printf( "int * sp = stack;\n");
-    printf( "int * fp = stack;\n");
+    printf( "void * stack[SIZE];\n"); 
+    printf( "void ** sp = stack+1;\n");
+    printf( "void ** fp = stack;\n");
 }
 
 
 void stack__save(){
-    printf("*sp = (int) fp;\n");
+    printf("*sp = (void*) fp;\n");
     printf( "sp = sp + 1;\n");
 }
 
@@ -35,11 +35,11 @@ void stack__return(attribute x){
 }
 
 void stack__push_param(attribute x){
-    printf("*sp = *(*(fp-1) + %d); //*(fp-1) = ancien fp \n",x->reg_number);
+    printf("*sp = *((void**)*(fp-1) + %d); //*(fp-1) = ancien fp \n",x->reg_number);
     stack__push();
 }
 
 void stack__push_numi(attribute x){
-    printf("*sp = %d;\n",x->int_val);
+    printf("*sp =(void*) %d;\n",x->int_val);
     stack__push();
 }

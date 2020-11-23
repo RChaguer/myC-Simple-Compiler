@@ -39,7 +39,7 @@ void write_type(attribute r);
 //void write_stars(attribute r);
 void write_func( attribute r);
 void write_aff(attribute r, attribute s);
-void write_aff_app(attribute r);
+void write_aff_app();
 void write_aff_p(attribute r, attribute s, int reg_num);
 
 

@@ -40,7 +40,7 @@ void yyerror (char* s) {
 %nonassoc ELSE
 
 %type <val> exp type pointer vir vlist typename  var_decl decl_list
-%type <val> cond inst bool_cond else
+%type <val> cond inst bool_cond else if while while_cond
 %type <val> fun_head params arglist args app
 
 
@@ -144,6 +144,8 @@ pointer
 
 inst_list: inst PV inst_list {}
 | inst pvo                   {}
+| cond inst_list             {}
+| loop inst_list             {}
 ;
 
 pvo : PV
@@ -156,8 +158,6 @@ exp                           {}
 | AO block AF                 {}
 | aff                         {}
 | ret                         {}
-| cond                        {}
-| loop                        {}
 | PV                          {}
 | %empty                      {}
 ;
@@ -181,44 +181,53 @@ ret : RETURN exp              {stack__return($2);}
 //           i.e. en lisant un ELSE en entrée, si on peut faire une reduction elsop, on la fait...
 
 cond :
-if bool_cond inst elsop {printf("l%d:;\n", $3->int_val);}
+if bool_cond inst_list elsop {}
 ;
 
-elsop : else inst             {}
-| %empty 
+elsop : else inst_list            {printf("l%d:;\n", $1->reg_number);}
+| %empty                          {printf("l%d:;\n", $<val>-1->reg_number);}
 ;
 
-bool_cond : PO exp PF         { $$ = $2;
-                                $$->int_val = new_label();
-                                printf("if ( !ri%d ) goto l%d;\n",
-                                $2->reg_number, $$->int_val);}
+bool_cond : PO exp PF         { $$=new_attribute();
+                                $$->reg_number = new_label();
+                                printf("if ( !*(fp + %d) ) goto l%d;\n",
+                                $2->reg_number, $$->reg_number);}
+                                
 ;
 
 if : IF                       {}
 ;
 
-else : ELSE                   { $$ = new_attribute();}
+else : ELSE                   { $$ = new_attribute();
+                              $$->reg_number = new_label();
+                              printf("goto l%d;\nl%d:;\n", $$->reg_number, $<val>-1->reg_number);
+                              }
 ;
 
 // II.4. Iterations
 
-loop : while while_cond inst  {}
+loop : while while_cond inst_list  {printf("goto l%d;\nl%d:;\n",$1->reg_number,$2->reg_number);}
 ;
 
-while_cond : PO exp PF        {}
+while_cond : PO exp PF        {$$=new_attribute();
+                                $$->reg_number = new_label();
+                                printf("if ( !*(fp + %d) ) goto l%d;\n",
+                                $2->reg_number, $$->reg_number);}
 
-while : WHILE                 {}
+while : WHILE                 { $$ = new_attribute();
+                              $$->reg_number = new_label();
+                              printf("l%d:;\n", $$->reg_number);}
 ;
 
 
 // II.3 Expressions
 exp
 // II.3.0 Exp. arithmetiques
-: MOINS exp %prec UNA         {}
+: MOINS exp %prec UNA         {$$ = neg_attribute($2);}
 | exp PLUS exp                {$$ = plus_attribute($1,$3);}
 | exp MOINS exp               {$$ = minus_attribute($1,$3);}
 | exp STAR exp                {$$ = mult_attribute($1,$3);}
-| exp DIV exp                 {$$ = mult_attribute($1,$3);}
+| exp DIV exp                 {$$ = div_attribute($1,$3);}
 | PO exp PF                   {$$ = $2;}
 | ID                          {$$ = get_symbol_value($1->name);}
 | app                         { 
@@ -230,10 +239,7 @@ exp
                               $$->reg_number=get_next_register();
                               stack__push_numi($$);}
 
-| NUMF                        {$$ = $1;
-                                $$->reg_number = new_reg_num();
-                                printf("float ri%d;\n", $$->reg_number);
-                                printf("ri%d = %f;\n", $$->reg_number, $$->float_val);}
+| NUMF                        {}
 
 // II.3.1 Déréférencement
 
