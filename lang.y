@@ -53,7 +53,8 @@ void yyerror (char* s) {
 prog : head func_list               {}
 ;
 
-head : %empty                 {stack__init();}
+head : %empty                 {stack__init();
+                              queue__init();}
 ;
 
 func_list : func_list fun      {}
@@ -103,6 +104,7 @@ fun_body : AO block AF         { printf("}\n\n");}
 ;
 
 // Block
+
 block:
 decl_list inst_list            {}
 ;
@@ -110,7 +112,7 @@ decl_list inst_list            {}
 // I. Declarations
 
 decl_list : decl_list decl     {}
-|                               %empty {}
+|%empty                        {}
 ;
 
 decl: var_decl PV              {}
@@ -152,10 +154,12 @@ pvo : PV
 | %empty 
 ;
 
+start_block: AO               {start_block();};
+end_block: AF               {finish_block();};
 
 inst:
 exp                           {}
-| AO block AF                 {}
+| start_block block end_block {}
 | aff                         {}
 | ret                         {}
 | PV                          {}
@@ -247,7 +251,7 @@ exp
 
 // II.3.2. Booléens
 
-| NOT exp %prec UNA           {}
+| NOT exp %prec UNA           { $$ = not_attribute($2);}
 | exp INF exp                 { $$ = bool_attribute($1, "<", $3);}
 | exp SUP exp                 { $$ = bool_attribute($1, ">", $3);}
 | exp EQUAL exp               { $$ = bool_attribute($1, "==", $3);}

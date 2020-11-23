@@ -113,3 +113,12 @@ attribute bool_attribute(attribute x, char *op, attribute y)
   stack__push();
   return r;
 };
+
+attribute not_attribute(attribute x){
+  attribute r = new_attribute();
+  r->reg_number=get_next_register();
+  /* unconditionally adding integer values */
+  printf("*sp = (void *)(!*(fp + %d)) ;\n", x->reg_number);
+  stack__push();
+  return r;
+};

@@ -10,21 +10,101 @@
 #include "Attribute.h"
 
 #include <stdlib.h>
+#include <assert.h>
 #include <stdio.h>
+#define CAPACITY 10
+
 
 /* The storage structure is implemented as a linked chain */
 
 /* linked element def */
-
 typedef struct elem {
 	sid symbol_name;
 	attribute symbol_value;
 	struct elem * next;
 } elem;
 
+
+
+//QUEUE
+struct QUEUE
+{
+  elem **tab;
+  int head;
+  int capacity;
+};
+
+typedef struct QUEUE queue;
+queue q;
+
 /* linked chain initial element */
 static elem * storage=NULL;
 static int register_number = 1;
+
+void queue__initialize(queue *s)
+{
+  s->head = 0;
+  s->capacity = CAPACITY;
+  s->tab = malloc(sizeof(elem*) * CAPACITY);
+  assert(s->tab != NULL);
+}
+
+void queue__push(elem* x, queue *s)
+{
+  if (s->head < s->capacity)
+  {
+    s->head++;
+    s->tab[s->head] = x;
+  }
+  else
+  {
+    s->tab = realloc(s->tab, sizeof(elem*) * CAPACITY * 2);
+    assert(s->tab != NULL);
+    s->capacity *= 2;
+    s->head++;
+    s->tab[s->head] = x;
+  }
+}
+
+elem* queue__pop(queue *s)
+{
+  elem* x = s->tab[s->head];
+  s->head--;
+  return x;
+}
+
+int queue__is_empty(queue *s)
+{
+  if (s->head == 0)
+    return 1;
+  return 0;
+}
+
+void queue__init(){
+	queue__initialize(&q);
+}
+
+void start_block(){
+	queue__push(storage,&q);
+}
+
+void finish_block(){
+	elem * tracker = storage;
+	if(!queue__is_empty(&q)){
+		storage = queue__pop(&q);
+	}
+	elem *to_free;
+	while (tracker!=storage)
+	{
+		to_free = tracker;
+		tracker = tracker->next;
+		free(to_free);
+	}
+}
+
+
+
+
 
 
 /* get the symbol value of symb_id from the symbol table */
@@ -50,21 +130,7 @@ int get_next_register(){
 /* set the value of symbol symb_id to value */
 attribute set_symbol_value(sid symb_id,attribute value,boolean b) {
 
-	elem * tracker;
-	
-	/* look for the presence of symb_id in storage */
-
-	tracker = storage;
-	while (tracker) {
-		if (tracker -> symbol_name == symb_id) {
-			tracker -> symbol_value = value;
-			return tracker -> symbol_value;
-		}
-		tracker = tracker -> next;
-	}
-	
-	/* otherwise insert it at head of storage with proper value */
-	
+	elem * tracker;	
 	tracker = malloc(sizeof(elem));
 
 	tracker -> symbol_name = symb_id;
@@ -77,8 +143,6 @@ attribute set_symbol_value(sid symb_id,attribute value,boolean b) {
 	storage = tracker;
 	return storage -> symbol_value;
 }
-
-
 
 void finish_func()
 {

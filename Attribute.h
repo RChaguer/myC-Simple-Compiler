@@ -47,6 +47,7 @@ attribute minus_attribute(attribute x, attribute y);
 attribute div_attribute(attribute x, attribute y);
 attribute neg_attribute(attribute x);
 attribute bool_attribute(attribute x, char* op, attribute y);
+attribute not_attribute(attribute x);
 
 
 #endif

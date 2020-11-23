@@ -21,6 +21,10 @@
 
 typedef enum {IS_FUNC,OTHER} boolean;
 
+void start_block();
+void finish_block();
+void queue__init();
+
 
 /* get the symbol value of symb_id from the symbol table, NULL if it fails */
 attribute get_symbol_value(sid symb_id);
