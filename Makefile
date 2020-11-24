@@ -36,7 +36,7 @@ lang			:	lex.yy.c y.tab.c ${SRC}/Table_des_symboles.c ${SRC}/Table_des_chaines.c
 test			:	${TST_LIST}
 
 cleanCp			:
-				@rm -f  lex.yy.c *.o y.tab.h y.tab.c lang *~ y.output;
+				@rm -f  lex.yy.c *.o y.tab.h y.tab.c lang *~ y.output ${C_FLS}/* 
 				
 clean			:	cleanCp
 				@if [ -d ${BLD} ]; then\

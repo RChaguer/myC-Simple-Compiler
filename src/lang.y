@@ -39,9 +39,9 @@ void yyerror (char* s) {
 %nonassoc UNA                  // highest priority on unary operator
 %nonassoc ELSE
 
-%type <val> exp type pointer vir vlist typename  var_decl decl_list
+%type <val> exp type pointer vir vlist typename  var_decl decl_list 
 %type <val> cond inst bool_cond else if while while_cond
-%type <val> fun_head params arglist args app
+%type <val> fun_head params arglist args app var_ID func_ID
 
 
 %start prog  
@@ -68,28 +68,28 @@ func_list : func_list fun      {}
 fun : type fun_head fun_body        { finish_func();}
 ;
 
-fun_head : ID PO PF             { set_symbol_value($<val>1->name, $1, IS_FUNC);
+fun_head : func_ID PO PF        { $1->type_val = $<val>0->type_val;
+                                  set_symbol_value($<val>1->name, $1, IS_FUNC);
                                   print_func($1);
                                 }
-| ID PO params PF               { $1->type_val = $<val>0->type_val;
-                                  set_symbol_value($1->name, $1,IS_FUNC);
+| func_ID PO params PF          { $1->type_val = $<val>0->type_val;
+                                  set_symbol_value($<val>1->name, $1, IS_FUNC);
                                   print_func($1);
                                 }
 ;
 
-params: type ID vir params      { $2->type_val = $1->type_val;
+params: type var_ID vir params      { $2->type_val = $1->type_val;
                                   set_symbol_value($2->name, $2,OTHER);
                                 }
-| type ID                       { $2->type_val = $1->type_val;
-                                  $2->reg_number = new_reg_num();
+| type var_ID                       { $2->type_val = $1->type_val;
                                   set_symbol_value($2->name, $2,OTHER);
                                 }
 
-vlist: ID vir vlist             { $1->type_val = $<val>0->type_val;
+vlist: var_ID vir vlist             { $1->type_val = $<val>0->type_val;
                                   set_symbol_value($1->name, $1,OTHER);
                                   stack__push();
                                 }
-| ID                            { $1->type_val = $<val>0->type_val;
+| var_ID                            { $1->type_val = $<val>0->type_val;
                                   set_symbol_value($1->name, $1,OTHER);
                                   stack__push();
                                 }
@@ -174,13 +174,13 @@ exp                           {}
 | aff                         {}
 | ret                         {}
 | PV                          {}
-| %empty                      {}
+| %empty
 ;
 
 
 // II.1 Affectations
 
-aff : ID EQ exp               { $1 = get_symbol_value($1->name, OTHER);
+aff : var_ID EQ exp           { $1 = get_symbol_value($1->name, OTHER);
                                 print_affect($1, $3);
                               }
 | STAR exp  EQ exp            { print_affect_p($2, $4);}
@@ -239,7 +239,10 @@ while : WHILE                 { $$ = new_attribute();
                                 printf("l%d:;\n", $$->label_number);
                               }
 ;
-
+func_ID : ID                  { $$ = $1;}
+;
+var_ID:  ID                   { $$ = $1;}
+;
 
 // II.3 Expressions
 exp
@@ -250,7 +253,7 @@ exp
 | exp STAR exp                { $$ = mult_attribute($1,$3);}
 | exp DIV exp                 { $$ = div_attribute($1,$3);}
 | PO exp PF                   { $$ = $2;}
-| ID                          { $$ = get_symbol_value($1->name, OTHER);}
+| var_ID                      { $$ = get_symbol_value($1->name, OTHER);}
 | app                         { $$->reg_number = get_next_register();
                                 print_affect_app($$);
                                 stack__push();
@@ -263,7 +266,7 @@ exp
 // II.3.1 Déréférencement
 
 | STAR exp %prec UNA          { $$ = new_attribute();
-                                $$->reg_number = new_reg_num();
+                                $$->reg_number = get_next_register();
                                 stack__push_dereference($2);
                               }
 
@@ -278,10 +281,11 @@ exp
 | exp OR exp                  { $$ = bool_attribute($1, "||", $3);}
 
 ;
-
 // II.4 Applications de fonctions
 
-app : ID PO args PF           { stack__reset();}
+app : func_ID PO args PF      { get_symbol_value($1->name, IS_FUNC);
+                                stack__reset();}
+;
 
 args :  arglist               { printf("call_%s();\n",$<val>-1->name);}
 

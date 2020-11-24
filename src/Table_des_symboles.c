@@ -113,10 +113,10 @@ void finish_block() {
 attribute get_symbol_value(sid symb_id, boolean type) {
 	elem * tracker;
 
-	if (type == IS_FUNC)
-		tracker=func_storage;
-	else 
-		tracker=storage;
+	if (type == IS_FUNC){
+		tracker=func_storage;}
+	else {
+		tracker=storage;}
 
 	/* look into the linked list for the symbol value */
 	while (tracker) {
@@ -133,6 +133,7 @@ attribute get_symbol_value(sid symb_id, boolean type) {
 attribute set_symbol_value(sid symb_id,attribute value,boolean type) {
 
 	elem * tracker;	
+	elem *actual_tracker;
 
 	if (type == IS_FUNC)
 		tracker = func_storage;
@@ -157,17 +158,16 @@ attribute set_symbol_value(sid symb_id,attribute value,boolean type) {
 		func_storage = tracker;
 		tracker->symbol_value->label_number = new_label();
 		return func_storage -> symbol_value;
-	} 
-	
-	tracker -> next = storage;
-	storage = tracker;
+	} else {
+		tracker -> next = storage;
+		storage = tracker;
 
-	elem *actual_tracker = malloc(sizeof(elem));
-	actual_tracker -> symbol_name = symb_id;
-	actual_tracker -> symbol_value = value;
-	actual_tracker -> next = actual_block_storage;
-	actual_block_storage = actual_tracker;
-
+		actual_tracker = malloc(sizeof(elem));
+		actual_tracker -> symbol_name = symb_id;
+		actual_tracker -> symbol_value = value;
+		actual_tracker -> next = actual_block_storage;
+		actual_block_storage = actual_tracker;
+	}
 	if (type == OTHER) {
 		tracker->symbol_value->reg_number = register_number;
 		actual_tracker->symbol_value->reg_number = register_number;

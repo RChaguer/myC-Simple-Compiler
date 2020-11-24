@@ -32,19 +32,14 @@ do
     fileName=$(echo $filePath | sed -e "s/tst\///g")
 
     # Generate file.h
-    echo "#ifndef TEST_H
-    #define TEST_H
-    " > $buildFolderName/H_C_Files/$fileName.h
+    echo -e "#ifndef TEST_H\n#define TEST_H\n" > $buildFolderName/H_C_Files/$fileName.h
 
     cat $tmp | head -n 4 >> $buildFolderName/H_C_Files/$fileName.h
 
-    echo "
-    #endif // TEST_H" >> $buildFolderName/H_C_Files/$fileName.h
+    echo -e "\n#endif // TEST_H" >> $buildFolderName/H_C_Files/$fileName.h
 
     # Generate file.c
-    echo "#include <stdio.h>
-    #include \"$fileName.h\"
-    " > $buildFolderName/H_C_Files/$fileName.c
+    echo -e "#include <stdio.h>\n#include \"$fileName.h\"\n" > $buildFolderName/H_C_Files/$fileName.c
 
     cat $tmp | tail -n +5 >> $buildFolderName/H_C_Files/$fileName.c
 

@@ -33,7 +33,6 @@ typedef struct ATTRIBUTE * attribute;
 
 
 attribute new_attribute ();// returns the pointeur to a newly allocated (but uninitialized) attribute value structure */
-int new_reg_num();// return the number of an unused register
 int new_label();// return the value of an unused label (for loops and conditionals)
 
 void print_func( attribute r); // print the function related the given attribute

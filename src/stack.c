@@ -35,7 +35,7 @@ void stack__return(attribute x){
 }
 
 void stack__push_param(attribute x){
-    printf("*sp = *((void**)*(fp-1) + %d); //*(fp-1) = ancien fp \n",x->reg_number);
+    printf("*sp = *((void**)*(fp-1) + %d); //*(fp-1) is the old fp adress \n",x->reg_number);
     stack__push();
 }
 

@@ -17,13 +17,6 @@ attribute new_attribute () {
   return r;
 };
 
-
-
-int new_reg_num()
-{
-  return reg_count++;
-}
-
 int new_label()
 {
   return label_count++;
