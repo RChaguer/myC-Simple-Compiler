@@ -20,8 +20,10 @@ struct ATTRIBUTE {
   float float_val;
   type type_val;
   int reg_number;
-  
+
   /* other attribute's fields can goes here */ 
+  int label_number;
+  int stars_number;
 
 };
 
@@ -37,7 +39,7 @@ int new_label();// return the value of an unused label (for loops and conditiona
 void print_func( attribute r); // print the function related the given attribute
 void print_affect(attribute r, attribute s); // print the assignements
 void print_affect_app(); // print the assignement of a function call to a variable
-void print_affect_p(attribute r, attribute s, int reg_num); // print the pointer assignements
+void print_affect_p(attribute r, attribute s); // print the pointer assignements
 
 
 

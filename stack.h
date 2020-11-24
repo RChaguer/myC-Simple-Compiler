@@ -10,5 +10,6 @@ void stack__push();
 void stack__reset();
 void stack__return(attribute x);
 void stack__push_param(attribute x);
+void stack__push_dereference(attribute x);
 void stack__push_numi(attribute x);
 #endif

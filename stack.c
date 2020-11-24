@@ -39,6 +39,11 @@ void stack__push_param(attribute x){
     stack__push();
 }
 
+void stack__push_dereference(attribute x){
+    printf("*sp = (void *) * ((long *) *(fp + %d));\n", x->reg_number);
+    stack__push();
+}
+
 void stack__push_numi(attribute x){
     printf("*sp =(void*) %d;\n",x->int_val);
     stack__push();

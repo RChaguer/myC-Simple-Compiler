@@ -13,6 +13,7 @@ attribute new_attribute () {
   attribute r;
   r  = malloc (sizeof (struct ATTRIBUTE));
   r->name = NULL;
+  r->stars_number = 0;
   return r;
 };
 
@@ -35,9 +36,9 @@ int new_label()
 void print_func(attribute r)
 {
   if(strcmp(r->name,"main"))
-    printf("void call_%s(){\n", r->name);
+    printf("void call_%s()\n", r->name);
   else  
-    printf("int main(){\n");
+    printf("int main()\n");
 }
 
 void print_affect(attribute r, attribute s)
@@ -50,10 +51,9 @@ void print_affect_app()
   printf("*sp = *(sp + 1);\n");
 }
 
-void print_affect_p(attribute r, attribute s, int reg_num)
+void print_affect_p(attribute r, attribute s)
 {
-  printf("ri%d = *ri%d;\n", reg_num, s->reg_number);
-  printf("%s = *ri%d;\n", r->name, s->reg_number);
+  printf("*((void **) *(fp+%d)) = *(fp + %d);\n", r->reg_number, s->reg_number);
 }
 
 

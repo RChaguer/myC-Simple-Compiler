@@ -24,33 +24,37 @@ typedef struct elem {
 	struct elem * next;
 } elem;
 
-
-
-//QUEUE
-struct QUEUE
-{
+/* SubBlock queue */
+typedef struct queue {
   elem **tab;
   int head;
   int capacity;
-};
+} queue;
 
-typedef struct QUEUE queue;
-queue q;
 
-/* linked chain initial element */
+/* Global variables used */
 static elem * storage=NULL;
+static elem * actual_block_storage = NULL;
 static int register_number = 1;
+char* actual_function_end_label = "end_label";
+static queue q;
 
-void queue__initialize(queue *s)
-{
+
+/* Register Number management function */
+int get_next_register() {
+	return register_number++;
+}
+
+
+/* Queue utility methods */
+void queue__initialize(queue *s) {
   s->head = 0;
   s->capacity = CAPACITY;
   s->tab = malloc(sizeof(elem*) * CAPACITY);
   assert(s->tab != NULL);
 }
 
-void queue__push(elem* x, queue *s)
-{
+void queue__push(elem* x, queue *s) {
   if (s->head < s->capacity)
   {
     s->head++;
@@ -66,29 +70,29 @@ void queue__push(elem* x, queue *s)
   }
 }
 
-elem* queue__pop(queue *s)
-{
+elem* queue__pop(queue *s) {
   elem* x = s->tab[s->head];
   s->head--;
   return x;
 }
 
-int queue__is_empty(queue *s)
-{
+int queue__is_empty(queue *s) {
   if (s->head == 0)
     return 1;
   return 0;
 }
 
-void queue__init(){
+void queue__init() {
 	queue__initialize(&q);
 }
 
-void start_block(){
+
+/* Block management functions */
+void start_block() {
 	queue__push(storage,&q);
 }
 
-void finish_block(){
+void finish_block() {
 	elem * tracker = storage;
 	if(!queue__is_empty(&q)){
 		storage = queue__pop(&q);
@@ -103,10 +107,7 @@ void finish_block(){
 }
 
 
-
-
-
-
+/* Symbol table management functions */
 /* get the symbol value of symb_id from the symbol table */
 attribute get_symbol_value(sid symb_id) {
 	elem * tracker=storage;
@@ -122,30 +123,56 @@ attribute get_symbol_value(sid symb_id) {
 	exit(-1);
 };
 
-int get_next_register(){
-	return register_number++;
-}
-
-
 /* set the value of symbol symb_id to value */
-attribute set_symbol_value(sid symb_id,attribute value,boolean b) {
+attribute set_symbol_value(sid symb_id,attribute value,boolean type) {
 
 	elem * tracker;	
+	tracker = actual_block_storage;
+	
+	while (tracker) {
+		if (tracker -> symbol_name == symb_id) {
+			tracker -> symbol_value = value;
+			fprintf(stderr,"Error : symbol %s is already defined in the same actual subBlock, choose another valid symbol\n",(char *) symb_id);
+			exit(-1);
+		}
+		tracker = tracker -> next;
+	}
+
 	tracker = malloc(sizeof(elem));
+	elem *actual_tracker = malloc(sizeof(elem));
 
 	tracker -> symbol_name = symb_id;
 	tracker -> symbol_value = value;
+	actual_tracker -> symbol_name = symb_id;
+	actual_tracker -> symbol_value = value;
+
 	tracker -> next = storage;
-	if(b == OTHER){
+	actual_tracker -> next = actual_block_storage;
+
+	if(type == OTHER) {
 		tracker->symbol_value->reg_number = register_number;
+		actual_tracker->symbol_value->reg_number = register_number;
 		register_number ++;
 	}
+	if (type == IS_FUNC) {
+		tracker->symbol_value->label_number = new_label();
+	}
+
 	storage = tracker;
+	actual_block_storage = actual_tracker;
+
 	return storage -> symbol_value;
 }
 
-void finish_func()
-{
+void reset_actual_symbol_table() {
+	actual_block_storage = NULL;
+}
+
+char* get_actual_function_end_label() {
+	return actual_function_end_label;
+}
+
+void finish_func() {
 	elem *tracker;
 	elem *to_free;
 	tracker = storage;
