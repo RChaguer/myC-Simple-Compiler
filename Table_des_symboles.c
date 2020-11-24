@@ -33,6 +33,7 @@ typedef struct queue {
 
 
 /* Global variables used */
+static elem * func_storage = NULL;
 static elem * storage=NULL;
 static elem * actual_block_storage = NULL;
 static int register_number = 1;
@@ -109,8 +110,13 @@ void finish_block() {
 
 /* Symbol table management functions */
 /* get the symbol value of symb_id from the symbol table */
-attribute get_symbol_value(sid symb_id) {
-	elem * tracker=storage;
+attribute get_symbol_value(sid symb_id, boolean type) {
+	elem * tracker;
+
+	if (type == IS_FUNC)
+		tracker=func_storage;
+	else 
+		tracker=storage;
 
 	/* look into the linked list for the symbol value */
 	while (tracker) {
@@ -127,45 +133,47 @@ attribute get_symbol_value(sid symb_id) {
 attribute set_symbol_value(sid symb_id,attribute value,boolean type) {
 
 	elem * tracker;	
-	tracker = actual_block_storage;
+
+	if (type == IS_FUNC)
+		tracker = func_storage;
+	else
+		tracker = actual_block_storage;
 	
 	while (tracker) {
 		if (tracker -> symbol_name == symb_id) {
-			tracker -> symbol_value = value;
-			fprintf(stderr,"Error : symbol %s is already defined in the same actual subBlock, choose another valid symbol\n",(char *) symb_id);
+			fprintf(stderr,"Error : symbol %s is already defined in the same actual subBlock or a function name, choose another valid symbol\n",(char *) symb_id);
 			exit(-1);
 		}
 		tracker = tracker -> next;
 	}
 
 	tracker = malloc(sizeof(elem));
-	elem *actual_tracker = malloc(sizeof(elem));
 
 	tracker -> symbol_name = symb_id;
 	tracker -> symbol_value = value;
+
+	if (type == IS_FUNC) {
+		tracker -> next = func_storage;
+		func_storage = tracker;
+		tracker->symbol_value->label_number = new_label();
+		return func_storage -> symbol_value;
+	} 
+	
+	tracker -> next = storage;
+	storage = tracker;
+
+	elem *actual_tracker = malloc(sizeof(elem));
 	actual_tracker -> symbol_name = symb_id;
 	actual_tracker -> symbol_value = value;
-
-	tracker -> next = storage;
 	actual_tracker -> next = actual_block_storage;
+	actual_block_storage = actual_tracker;
 
-	if(type == OTHER) {
+	if (type == OTHER) {
 		tracker->symbol_value->reg_number = register_number;
 		actual_tracker->symbol_value->reg_number = register_number;
 		register_number ++;
 	}
-	if (type == IS_FUNC) {
-		tracker->symbol_value->label_number = new_label();
-	}
-
-	storage = tracker;
-	actual_block_storage = actual_tracker;
-
 	return storage -> symbol_value;
-}
-
-void reset_actual_symbol_table() {
-	actual_block_storage = NULL;
 }
 
 char* get_actual_function_end_label() {
@@ -184,4 +192,5 @@ void finish_func() {
 	}
 	storage = NULL;
 	register_number = 1;
+	actual_block_storage = NULL;
 }

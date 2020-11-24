@@ -27,17 +27,15 @@ void queue__init();
 
 
 /* get the symbol value of symb_id from the symbol table, NULL if it fails */
-attribute get_symbol_value(sid symb_id);
+attribute get_symbol_value(sid symb_id, boolean type);
 
 /* set the value of symbol symb_id to value, return NULL if it fails */
 attribute set_symbol_value(sid symb_id, attribute value, boolean is_func);
 
-/* reset the actual block or subblock temp declarative symbol table */
-void reset_actual_symbol_table();
-
 char* get_actual_function_end_label();
 
 int get_next_register();
+
 void finish_func();
 
 

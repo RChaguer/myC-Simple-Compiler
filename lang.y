@@ -74,6 +74,7 @@ fun_head : ID PO PF             { set_symbol_value($<val>1->name, $1, IS_FUNC);
 | ID PO params PF               { $1->type_val = $<val>0->type_val;
                                   set_symbol_value($1->name, $1,IS_FUNC);
                                   print_func($1);
+                                  //set_actual_symbol_table();
                                 }
 ;
 
@@ -101,7 +102,9 @@ vir : VIR                      {}
 fun_body : func_AO block func_AF    {}
 ;
 
-func_AO : AO                        { printf("{\n");}
+func_AO : AO                        { 
+                                      printf("{\n");
+                                    }
 ;
 
 func_AF : AF                        { printf("%s:;\n", get_actual_function_end_label());
@@ -117,8 +120,8 @@ decl_list inst_list            {}
 
 // I. Declarations
 
-decl_list : decl_list decl     { reset_actual_symbol_table();}
-|%empty                        { reset_actual_symbol_table();}
+decl_list : decl_list decl     { }
+|%empty                        { }
 ;
 
 decl: var_decl PV              {}
@@ -180,7 +183,7 @@ exp                           {}
 
 // II.1 Affectations
 
-aff : ID EQ exp               { $1 = get_symbol_value($1->name);
+aff : ID EQ exp               { $1 = get_symbol_value($1->name, IS_FUNC);
                                 print_affect($1, $3);
                               }
 | STAR exp  EQ exp            { print_affect_p($2, $4);}
@@ -250,7 +253,7 @@ exp
 | exp STAR exp                { $$ = mult_attribute($1,$3);}
 | exp DIV exp                 { $$ = div_attribute($1,$3);}
 | PO exp PF                   { $$ = $2;}
-| ID                          { $$ = get_symbol_value($1->name);}
+| ID                          { $$ = get_symbol_value($1->name, OTHER);}
 | app                         { $$->reg_number = get_next_register();
                                 print_affect_app($$);
                                 stack__push();
