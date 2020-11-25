@@ -8,4 +8,4 @@ make cleanCp && make -s
 shift
 fi
 
-$preC $@ < $@
+$preC $@ 

@@ -79,19 +79,25 @@ fun_head : func_ID PO PF        { $1->type_val = $<val>0->type_val;
 ;
 
 params: type var_ID vir params      { $2->type_val = $1->type_val;
-                                  set_symbol_value($2->name, $2,OTHER);
+                                      $2->stars_number = $1->stars_number;
+                                      set_symbol_value($2->name, $2,OTHER);
                                 }
 | type var_ID                       { $2->type_val = $1->type_val;
-                                  set_symbol_value($2->name, $2,OTHER);
+                                      $2->stars_number = $1->stars_number;
+                                      set_symbol_value($2->name, $2,OTHER);
                                 }
 
 vlist: var_ID vir vlist             { $1->type_val = $<val>0->type_val;
-                                  set_symbol_value($1->name, $1,OTHER);
-                                  stack__push();
+                                      $1->stars_number = $<val>0->stars_number;
+                                      set_symbol_value($1->name, $1,OTHER);
+                                      stack__push();
                                 }
-| var_ID                            { $1->type_val = $<val>0->type_val;
-                                  set_symbol_value($1->name, $1,OTHER);
-                                  stack__push();
+|   var_ID                         {  
+                                      $1->type_val = $<val>0->type_val;
+                                      $1->stars_number = $<val>-2->stars_number;
+                                      $$=$1;
+                                      set_symbol_value($1->name, $1,OTHER);
+                                      stack__push();
                                 }
 ;
 
@@ -124,12 +130,14 @@ decl_list : decl_list decl     {}
 decl: var_decl PV              {}
 ;
 
-var_decl : type vlist          { $2 -> type_val = $1->type_val;}
+var_decl : type vlist          { $2 -> type_val = $1->type_val;
+                                }
 ;
 
 type
-: typename pointer             { $$ = $2;
+: typename pointer             { $$ = $1;
                                  $$->type_val = $1->type_val;
+                                 $$->stars_number=$2->stars_number;
                                }
 | typename                     { $$ = $1;}
 ;
@@ -147,7 +155,7 @@ pointer
 : pointer STAR                 { $$=$1;
                                  $$->stars_number++;
                                }
-| STAR                         { $$ = new_attribute();
+| STAR                         { 
                                  $$->stars_number++;
                                }
 ;

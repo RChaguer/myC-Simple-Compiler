@@ -34,7 +34,7 @@ typedef struct ATTRIBUTE * attribute;
 
 attribute new_attribute ();// returns the pointeur to a newly allocated (but uninitialized) attribute value structure */
 int new_label();// return the value of an unused label (for loops and conditionals)
-
+void print_stars(attribute x);
 void print_func( attribute r); // print the function related the given attribute
 void print_affect(attribute r, attribute s); // print the assignements
 void print_affect_app(); // print the assignement of a function call to a variable
