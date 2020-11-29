@@ -233,7 +233,7 @@ else : ELSE                   { $$ = new_attribute();
 
 // II.4. Iterations
 
-loop : while while_cond inst_list  { printf("goto l%d;\nl%d:;\n",$1->reg_number,$2->reg_number);}
+loop : while while_cond inst_list  { printf("goto l%d;\nl%d:;\n",$1->label_number,$2->label_number);}
 ;
 
 while_cond : PO exp PF        { $$=new_attribute();

@@ -156,7 +156,6 @@ attribute set_symbol_value(sid symb_id,attribute value,boolean type) {
 	if (type == IS_FUNC) {
 		tracker -> next = func_storage;
 		func_storage = tracker;
-		tracker->symbol_value->label_number = new_label();
 		return func_storage -> symbol_value;
 	} else {
 		tracker -> next = storage;

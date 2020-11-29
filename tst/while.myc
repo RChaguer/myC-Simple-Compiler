@@ -1,0 +1,11 @@
+int f(int a){ return a-1;}
+
+void main() {
+    int x,i;
+    x = 9;
+    i = 8;
+    while( i > 0) {
+        x = f(x);
+        i = i-1;
+    }
+}

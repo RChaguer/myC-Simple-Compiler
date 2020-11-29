@@ -1,0 +1,11 @@
+int f(int a) {
+    int x;
+    x = 11;
+    a = a+x;
+    return a;
+}
+
+void main() {
+    int x;
+    x = f(7);
+}

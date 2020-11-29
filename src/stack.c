@@ -4,7 +4,7 @@
 
 
 void stack__init(){
-    printf("#define SIZE 100 \n");
+    printf("#define SIZE 300 \n");
     printf( "void * stack[SIZE];\n"); 
     printf( "void ** sp = stack+1;\n");
     printf( "void ** fp = stack;\n");

@@ -19,6 +19,7 @@ attribute new_attribute () {
 
 int new_label()
 {
+  printf("//new label \n");
   return label_count++;
 }
 
@@ -112,6 +113,10 @@ attribute plus_attribute(attribute x, attribute y) {
 attribute mult_attribute(attribute x, attribute y){
   attribute r = new_attribute();
   r->reg_number=get_next_register();
+  if(x->stars_number || y->stars_number){
+    fprintf(stderr,"Forbiden operation '*' for pointers\n");
+    exit(-1);
+  }
   printf("*sp = (void *)((long) *(fp + %d) * (long)*(fp + %d));\n", x->reg_number, y->reg_number);
   stack__push();
   return r;
@@ -120,7 +125,7 @@ attribute mult_attribute(attribute x, attribute y){
 attribute minus_attribute(attribute x, attribute y){
   attribute r = new_attribute();
   r->reg_number=get_next_register();
-    if(x->stars_number && y->stars_number && x->stars_number != y->stars_number){
+  if(x->stars_number && y->stars_number && x->stars_number != y->stars_number){
     fprintf(stderr,"Forbiden operation\n");
     exit(-1);
   }
@@ -140,6 +145,10 @@ attribute minus_attribute(attribute x, attribute y){
 attribute div_attribute(attribute x, attribute y){
   attribute r = new_attribute();
   r->reg_number=get_next_register();
+  if(x->stars_number || y->stars_number){
+    fprintf(stderr,"Forbiden operation '/' for pointers\n");
+    exit(-1);
+  }
   printf("*sp = (void *)((long) *(fp + %d) / (long)*(fp + %d));\n", x->reg_number, y->reg_number);
   stack__push();
   return r;

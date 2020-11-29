@@ -1,0 +1,12 @@
+void main() {
+    int x,y,z;
+    x = 7;
+    y = 11;
+    z = 18;
+    while (x > 0) {
+        if (z > y) {
+            z = z-1;
+        }
+        x = x-1;
+    }
+}
